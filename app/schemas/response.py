@@ -1,25 +1,39 @@
-from typing import List, Literal
+from typing import List, Optional, Literal
 from pydantic import BaseModel, Field
 
 
 class AnalyzeTicketResponse(BaseModel):
-    ticket_id: str = Field(..., example="TKT-001")
-
-    relevant_transaction_id: str = Field(
+    ticket_id: str = Field(
         ...,
+        example="TKT-001"
+    )
+
+    # Match না পেলে null হবে
+    relevant_transaction_id: Optional[str] = Field(
+        default=None,
         example="TXN-9101"
     )
 
+    # Hackathon taxonomy
     evidence_verdict: Literal[
         "consistent",
         "inconsistent",
-        "insufficient_evidence"
+        "insufficient_data",
     ] = Field(
         ...,
         example="consistent"
     )
 
-    case_type: str = Field(
+    case_type: Literal[
+        "wrong_transfer",
+        "payment_failed",
+        "refund_request",
+        "duplicate_payment",
+        "merchant_settlement_delay",
+        "agent_cash_in_issue",
+        "phishing_or_social_engineering",
+        "other",
+    ] = Field(
         ...,
         example="wrong_transfer"
     )
@@ -28,30 +42,37 @@ class AnalyzeTicketResponse(BaseModel):
         "low",
         "medium",
         "high",
-        "critical"
+        "critical",
     ] = Field(
         ...,
         example="high"
     )
 
-    department: str = Field(
+    department: Literal[
+        "customer_support",
+        "dispute_resolution",
+        "payments_ops",
+        "merchant_operations",
+        "agent_operations",
+        "fraud_risk",
+    ] = Field(
         ...,
         example="dispute_resolution"
     )
 
     agent_summary: str = Field(
         ...,
-        example="Customer reports sending 5000 BDT via transaction TXN-9101 to the wrong recipient."
+        example="Customer reports sending money to the wrong recipient."
     )
 
     recommended_next_action: str = Field(
         ...,
-        example="Verify TXN-9101 details with the customer and initiate the dispute workflow."
+        example="Verify transaction details and initiate dispute workflow."
     )
 
     customer_reply: str = Field(
         ...,
-        example="We have noted your concern regarding transaction TXN-9101. Our team is reviewing the issue and will update you shortly."
+        example="We have received your complaint. Our team is reviewing it and will contact you shortly."
     )
 
     human_review_required: bool = Field(
@@ -61,15 +82,15 @@ class AnalyzeTicketResponse(BaseModel):
 
     confidence: float = Field(
         ...,
-        ge=0.0,
-        le=1.0,
-        example=0.90
+        ge=0,
+        le=1,
+        example=0.91
     )
 
     reason_codes: List[str] = Field(
         default_factory=list,
         example=[
+            "transaction_match",
             "wrong_transfer",
-            "transaction_match"
         ]
     )

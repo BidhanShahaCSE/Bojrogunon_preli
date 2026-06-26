@@ -112,7 +112,7 @@ class GraphState(TypedDict):
 
     match_found: bool
 
-    relevant_transaction_id: Optional[str]
+    relevant_transaction_id: str | None
 
     matched_transaction: Optional[Transaction]
 
@@ -121,13 +121,11 @@ class GraphState(TypedDict):
     # Investigation
     # ======================================================
 
-    evidence_verdict: Optional[
-        Literal[
-            "consistent",
-            "inconsistent",
-            "insufficient_data",
-        ]
-    ]
+    evidence_verdict: Literal[
+    "consistent",
+    "inconsistent",
+    "insufficient_data",
+]
 
     case_type: Optional[
         Literal[
